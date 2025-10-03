@@ -1,7 +1,8 @@
-scriptroot.SurfaceGui.Frame.TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- black background
-scriptroot.SurfaceGui.Frame.TextLabel.TextColor3 = Color3.new(1, 1, 1) -- white text
+scriptroot.SurfaceGui.Frame.TextLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+scriptroot.SurfaceGui.Frame.TextLabel.TextColor3 = Color3.new(1, 1, 1)
 
 print("Penguin Catch")
+
 local upPort = io.port.input.new(1)
 local downPort = io.port.input.new(2)
 local leftPort = io.port.input.new(3)
@@ -19,25 +20,39 @@ local score = 0
 local direction = "none"
 
 local function draw()
-local display = ""
-for y = 1, HEIGHT do
-local dotRemoved = false
-for x = 1, WIDTH do
-if penguin.x == x and penguin.y == y then
-display = display .. "🐧"
-elseif fish.x == x and fish.y == y then
-display = display .. "🐟"
-elseif not dotRemoved and y == penguin.y and x ~= penguin.x then
-display = display .. " "
-dotRemoved = true
-else
-display = display .. "."
-end
-end
-display = display .. "\n"
-end
-display = display .. "Score: " .. score
-scriptroot.SurfaceGui.Frame.TextLabel.Text = display
+    local display = ""
+
+    for y = 1, HEIGHT do
+        local dotsRemoved = 0
+        local dotsToRemove = 0
+
+        if y == penguin.y and y == fish.y then
+            dotsToRemove = 2
+        elseif y == penguin.y then
+            dotsToRemove = 1
+        elseif y == fish.y then
+            dotsToRemove = 1
+        end
+
+        local x = 1
+        while x <= WIDTH do
+            if penguin.x == x and penguin.y == y then
+                display = display .. "🐧"
+            elseif fish.x == x and fish.y == y then
+                display = display .. "🐟"
+            elseif dotsRemoved < dotsToRemove and ((y == penguin.y and x ~= penguin.x) or (y == fish.y and x ~= fish.x)) then
+                dotsRemoved = dotsRemoved + 1
+            else
+                display = display .. "."
+            end
+            x = x + 1
+        end
+
+        display = display .. "\n"
+    end
+
+    display = display .. "Score: " .. score
+    scriptroot.SurfaceGui.Frame.TextLabel.Text = display
 end
 
 local function move()
